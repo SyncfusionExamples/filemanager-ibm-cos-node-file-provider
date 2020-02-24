@@ -1,0 +1,7 @@
+{ "config":{
+    "bucketName": "syncfusion-files",
+    "endpoint": "s3.us-south.cloud-object-storage.appdomain.cloud",
+    "apiKeyId": "EiDaFDoY4a-njg0mc4dFxT7AtYhEzwYIONkDv5A5-Wd2",
+     "serviceInstanceId": "crn:v1:bluemix:public:cloud-object-storage:global:a/1651281fb4b444e69c7fb70f38cd59b9:adb80d29-098e-4603-a0c4-a85eef4aaf2e::"    
+}
+}
