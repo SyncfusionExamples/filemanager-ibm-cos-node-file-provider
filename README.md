@@ -30,9 +30,9 @@ To run the service, create an IBM Cloud Object Storage for accessing and storing
 ```
 
 "bucketName": "Files",
-"endpoint": "s3.us-south.cloud-object-storage.appdomain.cloud",
-"apiKeyId": "GMF_KtCYK1R1xth_ioP7XYY5VyxXXUTVHf29MxJCc6jGHpX",
-"serviceInstanceId": "crn:v1:bluemix:public:cloud-object-storage:global:a/1651281f45b4b444e69c7fb70f38cd59b9:xxxxxxx-098e-4603-xxxx-a85eef4aaf2e::"
+"endpoint": "s3.xxxxxxxxxxxxxxxxxxxxxxxx.cloud",
+"apiKeyId": "GMxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxKGX",
+"serviceInstanceId": "cxxn:v1:xxxxxxxxx:cloud-object-storage:xxxxxxxx:a/1651281f453343434e69c7fb70f38cd59b9:xxxxxxx-09xxe-xx-xxxx-a85eexxxxxaaf2e::"
 
 ```
 
