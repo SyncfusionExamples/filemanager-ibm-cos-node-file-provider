@@ -21,9 +21,9 @@ var promiseList = [];
 var fileName = [];
 // Sets the response content type
 const ContentType = 'application/octet-stream';
-// MULTER CONFIG: to get file photos to temp server storage
+// MULTER CONFIG: To get file photos to temp server storage
 const multerConfig = {
-    // Specify diskStorage (another option is memory)
+    // Specify disk storage (another option is memory)
     storage: multer.diskStorage({
 
         // Specify destination

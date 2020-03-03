@@ -1,6 +1,6 @@
-# IBM Cloud Object Storage NodeJS file providers for Essential JS 2 File Manager
+# IBM Cloud Object Storage file provider for Essential JS 2 File Manager
 
-This repository contains the IBM Cloud Object Storage NodeJS file provider used for Essential JS 2 File Manager component.
+This repository contains the IBM Cloud Object Storage file provider used for Essential JS 2 File Manager component.
 
 ## Key features
 
@@ -38,7 +38,7 @@ To run the service, create an IBM Cloud Object Storage for accessing and storing
 
 ## How to configure a web service
 
-Follow these commands to configure the IBM Cloud Object Storage file providers.
+Follow these commands to configure the IBM Cloud Object Storage file provider.
 
 - To install ej2-filemanager-ibm-cos-node-file-provider package, use the following command.
 
@@ -78,7 +78,7 @@ npm start
 
 ## File Manager AjaxSettings
 
-To access the basic actions such as Read, Delete, Copy, Move, Rename, Search, and Get Details of File Manager using IBM Cloud Object Storage file service, map the following code snippet in the AjaxSettings property of File Manager.
+To access the basic actions such as Read, Delete, Copy, Move, Rename, Search, and Get Details of File Manager using IBM Cloud Object Storage file provider, map the following code snippet in the AjaxSettings property of File Manager.
 
 Here, the `hostUrl` will be your locally hosted port number.
 
