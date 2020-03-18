@@ -1,0 +1,7 @@
+{ "config":{
+    "bucketName": "<---bucketName--->",
+    "endpoint": "<---endpoint--->",
+    "apiKeyId": "<---apiKeyId--->",
+    "serviceInstanceId": "<---serviceInstanceId--->"    
+}
+}
