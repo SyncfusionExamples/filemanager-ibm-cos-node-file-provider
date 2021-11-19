@@ -1,6 +1,6 @@
-# IBM Cloud Object Storage file provider for Essential JS 2 File Manager
+# IBM Cloud Object Storage file provider for Synfusion File Manager
 
-This repository contains the IBM Cloud Object Storage file provider used for Essential JS 2 File Manager component.
+This repository contains the IBM Cloud Object Storage file provider used for Synfusion File Manager component.
 
 ## Key features
 
