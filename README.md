@@ -1,6 +1,6 @@
-# IBM Cloud Object Storage file provider for Synfusion File Manager
+# IBM Cloud Object Storage file provider for Syncfusion File Manager
 
-This repository contains the IBM Cloud Object Storage file provider used for Synfusion File Manager component.
+This repository contains the IBM Cloud Object Storage file provider used for Syncfusion File Manager component.
 
 ## Key features
 
