@@ -56,7 +56,7 @@ app.use(cors());
  * Gets the imageUrl from the client
  */
 app.get('/GetImage', function (req, res) {
-    var relativeImagePath = req.query.path.split("/").length > 1 ? req.query.path : "/" + req.query.path;
+    var relativeImagePath = (req.query.path ? req.query.path.split("/").length > 1 : req.query.Path.split("/").length > 1) ? (req.query.path ? req.query.path : req.query.Path) : "/" + req.query.path;
     cos.getObject({
         Bucket: awsConfig.bucketName,
         Key: relativeImagePath.substr(1, relativeImagePath.length),
@@ -100,6 +100,21 @@ app.post('/Upload', multer(multerConfig).any('uploadFiles'), function (req, res)
             })
     });
 });
+
+/**
+ * Function to update the request data
+ */
+ function updateBodyData(bodyData) {
+     var updatedData = [];
+     bodyData.forEach(fileData => {
+         var updatedFileData = {};
+         Object.keys(fileData).forEach(data => {
+             updatedFileData[data.charAt(0).toLowerCase() + data.slice(1)] = fileData[data];
+         });
+         updatedData.push(updatedFileData);
+     });
+     return updatedData;
+ }
 
 /**
  * Function to get the folder
@@ -428,7 +443,7 @@ function getFileDetails(req, res) {
                         Key: reqObj.body.data[0].isFile ? data.Prefix.substr(0, data.Prefix.length - 1) : data.Prefix
                     }).promise().then(function (data) {
                         resolve(data);
-                    })
+                    }).catch((reason) => console.log(reason))
                 }));
             }
             fileDetails(req, res, isNamesAvailable, isMultipleFiles);
@@ -470,7 +485,7 @@ function getFileDetails(req, res) {
                             Key: keyValue
                         }).promise().then(function (data) {
                             resolve(data);
-                        })
+                        }).catch((reason) => console.log(reason))
                     }));
                 }
                 fileDetails(req, res, isNamesAvailable, isMultipleFiles);
@@ -730,6 +745,7 @@ function copyMoveOperations(action, req, res) {
             hasChild(req.body.path.substr(1, req.body.path.length) + "/").then(function (data) {
                 cwd.hasChild = data;
                 cwd.type = "";
+                cwd.filterPath = req.body.targetPath;
                 files.push(cwd);
                 promiseList = [];
                 if (action == "move") {
@@ -754,14 +770,16 @@ function copyMoveOperations(action, req, res) {
 
 app.post('/', function (req, res) {
     req.setTimeout(0);
-
+    req.body.data = updateBodyData(req.body.data);
     // Action for copying file(s) or folder(s)
     if (req.body.action == "copy") {
+        req.body.targetData = updateBodyData([req.body.targetData]);
         copyMoveOperations("copy", req, res);
     }
 
     // Action for moving file(s) or folder(s)
     if (req.body.action == "move") {
+        req.body.targetData = updateBodyData([req.body.targetData]);
         copyMoveOperations("move", req, res);
     }
 
@@ -788,7 +806,7 @@ app.post('/', function (req, res) {
                     Key: key,
                 }).promise().then(function () {
                     response = {
-                        files: [{ name: req.body.name }], error: null,
+                        files: [{ name: req.body.name, filterPath: req.body.path }], error: null,
                         details: null, cwd: null
                     };
                     responseDetails(res, response);
@@ -935,6 +953,7 @@ app.post('/', function (req, res) {
                 hasChild(req.body.path.substr(1, req.body.path.length) + req.body.newName + "/").then(function (data) {
                     cwd.hasChild = data;
                     cwd.type = "";
+                    cwd.filterPath = req.body.path;
                     files.push(cwd);
                     promiseList = [];
                     if (isResponseError) {
@@ -999,7 +1018,7 @@ app.post('/', function (req, res) {
                     });
                 }
                 if (index == array.length - 1) {
-                    response = { cwd: [], files: files };
+                    response = { cwd: req.body.data[0], files: files };
                     responseDetails(res, response);
                 }
             });
