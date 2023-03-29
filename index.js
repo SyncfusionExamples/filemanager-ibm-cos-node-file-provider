@@ -526,7 +526,19 @@ function recursiveFileDelete(prefix) {
  * Function to delete the file
  */
 function deleteFile(req, name, res) {
+    var isDeletePrevented = false;
     return new Promise((resolve, reject) => {
+        if(res!= null && req.headers.origin == "https://ej2.syncfusion.com"){
+            isDeletePrevented = true;
+            var errorMsg = new Error();
+            errorMsg.message =  "File Manager's delete functionality is restricted in the online demo. If you need to test delete functionality, please install Syncfusion Essential Studio on your machine and run the demo";
+            errorMsg.code = "401";
+            response = { error: errorMsg };
+            response = JSON.stringify(response);
+            res.setHeader('Content-Type', 'application/json');
+            res.json(response);
+        }
+        if(!isDeletePrevented){
         promiseList = [];
         if (name) {
             req.body.names = [name];
@@ -584,6 +596,7 @@ function deleteFile(req, name, res) {
                     resolve(data);
                 });
             });
+        }
         }
     });
 }
