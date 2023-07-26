@@ -585,8 +585,7 @@ function deleteFile(req, name, res) {
                 });
             });
         }
-        }
-    );
+    });
 }
 
 /**
