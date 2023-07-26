@@ -1119,7 +1119,7 @@ app.post('/', function (req, res) {
                     dateModified: new Date(),
                     dateCreated: new Date(),
                     type: "",
-                    filterPath: req.body.path,
+                    filterPath: req.body.data.length > 0 ? req.body.path : "",
                 };
                 response = {
                     cwd: cwdFile,
