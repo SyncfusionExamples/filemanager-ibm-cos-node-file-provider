@@ -945,6 +945,7 @@ app.post('/', function (req, res) {
                 var cwd = getCWDObjects();
                 var files = [];
                 cwd.name = req.body.newName;
+                cwd.filterPath = req.body.path;
                 hasChild(req.body.path.substr(1, req.body.path.length) + req.body.newName + "/").then(function (data) {
                     cwd.hasChild = data;
                     cwd.type = "";
