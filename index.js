@@ -1,6 +1,12 @@
 // Create a new express server
 const express = require('express');
 const app = express();
+const rateLimit = require("express-rate-limit");
+// Enable rate limiting
+const limiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 100 // limit each IP to 100 requests per windowMs
+  });
 const AWS = require('ibm-cos-sdk');
 const path = require('path');
 const bodyParser = require("body-parser");
@@ -49,6 +55,7 @@ const multerConfig = {
 app.use(bodyParser.urlencoded({
     extended: true
 }));
+app.use(limiter);
 app.use(bodyParser.json());
 app.use(cors());
 
@@ -56,8 +63,8 @@ app.use(cors());
  * Gets the imageUrl from the client
  */
 app.get('/GetImage', function (req, res) {
-    var relativeImagePath = req.query.path.split("/").length > 1 ? req.query.path : "/" + req.query.path;
-    cos.getObject({
+    const sanitizedPath = path.normalize(req.query.path).replace(/\\/g, '/');
+    var relativeImagePath = sanitizedPath.split("/").length > 1 ? sanitizedPath : "/" + sanitizedPath;    cos.getObject({
         Bucket: awsConfig.bucketName,
         Key: relativeImagePath.substr(1, relativeImagePath.length),
     }).promise().then(function (data) {
@@ -658,19 +665,21 @@ function copyMoveOperations(action, req, res) {
                     Bucket: awsConfig.bucketName,
                     Key: data.Prefix.substr(0, data.Prefix.length - 1)
                 }).promise().then(function (data) {
-                    for (var i = 0; i < req.body.names.length; i++) {
-                        var tempPath = path.join("./temp/", data.$response.request.params.Key);
-                        if (path.extname(tempPath) != "") {
-                            cos.putObject({
-                                Bucket: awsConfig.bucketName,
-                                Key: (req.body.targetPath + req.body.names[i]).substr(1, (req.body.targetPath + req.body.names[i]).length),
-                                Body: Buffer.from(data.Body, 'base64'),
-                                ContentType: ContentType
-                            }).promise().then(function (data) {
-                            });
+                    if (Array.isArray(req.body.names)) {
+                        for (var i = 0; i < req.body.names.length; i++) {
+                            var tempPath = path.join("./temp/", data.$response.request.params.Key);
+                            if (path.extname(tempPath) != "") {
+                                cos.putObject({
+                                    Bucket: awsConfig.bucketName,
+                                    Key: (req.body.targetPath + req.body.names[i]).substr(1, (req.body.targetPath + req.body.names[i]).length),
+                                    Body: Buffer.from(data.Body, 'base64'),
+                                    ContentType: ContentType
+                                }).promise().then(function (data) {
+                                });
+                            }
                         }
+                        resolve();
                     }
-                    resolve();
                 });
             }));
         }
