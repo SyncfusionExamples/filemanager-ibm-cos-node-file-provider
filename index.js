@@ -1102,15 +1102,18 @@ app.post('/', function (req, res) {
     if (req.body.action == "read") {
         var response, cwdFile = {};
         if (req.body.path != "/") {
-            cwdFile = {
-                name: req.body.data[0].name,
-                size: 0,
-                isFile: false,
-                dateModified: req.body.data[0].dateCreated,
-                dateCreated: req.body.data[0].dateModified,
-                filterPath: req.body.path,
-                type: ""
-            };
+            cos.listObjects({ Bucket: awsConfig.bucketName, Delimiter: "/", Prefix: "" + req.body.path.substr(1, req.body.path.length).replace("//", "/"), Marker: "" + req.body.path.substr(1, req.body.path.length).replace("//", "/") }, function (err, data, array) {
+                cwdFile = {
+                    name: req.body.data[0].name,
+                    size: 0,
+                    isFile: false,
+                    dateModified: req.body.data[0].dateCreated,
+                    dateCreated: req.body.data[0].dateModified,
+                    filterPath: req.body.path,
+                    type: "",
+                    hasChild : data.CommonPrefixes.length > 0 ? true : false
+                };
+            });
             getFilesList(req).then(data => {
                 response = {
                     cwd: cwdFile,
@@ -1120,7 +1123,7 @@ app.post('/', function (req, res) {
             })
 
         } else {
-            getFilesList(req).then(data => {
+            cos.listObjects({ Bucket: awsConfig.bucketName.toString(), Delimiter: "/" }, function (err, data) {
                 cwdFile = {
                     name: awsConfig.bucketName,
                     size: 0,
@@ -1129,7 +1132,10 @@ app.post('/', function (req, res) {
                     dateCreated: new Date(),
                     type: "",
                     filterPath: req.body.data.length > 0 ? req.body.path : "",
+                    hasChild : data.CommonPrefixes.length > 0 ? true : false
                 };
+            });
+            getFilesList(req).then(data => {
                 response = {
                     cwd: cwdFile,
                     files: data
