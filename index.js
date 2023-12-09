@@ -1102,7 +1102,7 @@ app.post('/', function (req, res) {
     if (req.body.action == "read") {
         var response, cwdFile = {};
         if (req.body.path != "/") {
-            cos.listObjects({ Bucket: awsConfig.bucketName.toString(), Delimiter: "/" }, function (err, data) {
+            cos.listObjects({ Bucket: awsConfig.bucketName, Delimiter: "/", Prefix: "" + req.body.path.substr(1, req.body.path.length).replace("//", "/"), Marker: "" + req.body.path.substr(1, req.body.path.length).replace("//", "/") }, function (err, data, array) {
                 cwdFile = {
                     name: req.body.data[0].name,
                     size: 0,
