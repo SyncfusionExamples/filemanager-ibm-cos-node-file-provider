@@ -614,7 +614,6 @@ function hasChild(fileName) {
  * Function to update the response
  */
 function responseDetails(res, response) {
-    response = JSON.stringify(response);
     res.setHeader('Content-Type', 'application/json');
     res.json(response);
 }
@@ -976,40 +975,56 @@ app.post('/', function (req, res) {
     // Action to searches a file
     if (req.body.action === 'search') {
         var searchString = req.body.searchString.replace(/\*/g, "")
+        var caseSensitive = req.body.caseSensitive;
         var files = [];
         var filterName = "";
+        var cwd = {};
         cos.listObjects({ Bucket: awsConfig.bucketName, Delimiter: "" + req.body.path.substr(1, req.body.path.length), Prefix: "" + req.body.path.substr(1, req.body.path.length), Marker: "" + req.body.path.substr(1, req.body.path.length) }, function (err, data) {
             data.Contents.forEach(function (file, index, array) {
-                if (file.Key.indexOf(searchString) >= 0) {
-                    var cwd = {};
-                    var size = file.Size;
-                    var dateModified = file.LastModified;
-                    filterName = "";
-                    file.Key.split("/").forEach(function (value, index, array) {
-                        if (value.indexOf(searchString) >= 0) {
-                            if (path.extname(value) == "") {
-                                cwd.type = "";
-                                cwd.isFile = false;
-                            } else {
-                                cwd.type = path.extname(value);
-                                cwd.isFile = true;
-                            }
-                            cwd.name = value;
-                            cwd.size = size
-                            cwd.dateModified = dateModified;
-                            cwd.dateCreated = new Date();
-                            cwd.filterPath = "/" + filterName;
-                            cwd.path = "";
-                            cwd.hasChild = false;
-                            if (files.findIndex(x => (x.name == cwd.name & x.filterPath == cwd.filterPath)) < 0) {
-                                files.push(cwd);
-                            }
+                cwd = {
+                    name: req.body.data[0].name,
+                    size: 0,
+                    isFile: false,
+                    dateModified: req.body.data[0].dateCreated,
+                    dateCreated: req.body.data[0].dateModified,
+                    filterPath: req.body.data[0].filterPath,
+                    type: "",
+                    hasChild : data.CommonPrefixes.length > 0 ? true : false
+                };
+                var size = file.Size;
+                var dateModified = file.LastModified;
+                filterName = "";
+                file.Key.split("/").forEach(function (value, index, array) {
+                    var isMatch = false;
+                    if(!caseSensitive){
+                        isMatch = value.toLowerCase().endsWith(searchString.toLowerCase()) || value.toLowerCase().includes(searchString.toLowerCase()) || value.toLowerCase().indexOf(searchString.toLowerCase()) >= 0;
+                    } else {
+                        isMatch = value.endsWith(searchString) || value.includes(searchString) || value.indexOf(searchString) >= 0;
+                    }
+                    if (isMatch) {
+                        var filterFiles = {};
+                        if (path.extname(value) == "") {
+                            filterFiles.type = "";
+                            filterFiles.isFile = false;
+                        } else {
+                            filterFiles.type = path.extname(value);
+                            filterFiles.isFile = true;
                         }
-                        filterName += value + "/";
-                    });
-                }
+                        filterFiles.name = value;
+                        filterFiles.size = size
+                        filterFiles.dateModified = dateModified;
+                        filterFiles.dateCreated = new Date();
+                        filterFiles.filterPath = "/" + filterName;
+                        filterFiles.path = "";
+                        filterFiles.hasChild = false;
+                        if (files.findIndex(x => (x.name == filterFiles.name & x.filterPath == filterFiles.filterPath)) < 0) {
+                            files.push(filterFiles);
+                        }
+                    }
+                    filterName += value + "/";
+                });
                 if (index == array.length - 1) {
-                    response = { cwd: [], files: files };
+                    response = { cwd: cwd, files: files };
                     responseDetails(res, response);
                 }
             });
@@ -1109,7 +1124,7 @@ app.post('/', function (req, res) {
                     isFile: false,
                     dateModified: req.body.data[0].dateCreated,
                     dateCreated: req.body.data[0].dateModified,
-                    filterPath: req.body.path,
+                    filterPath: req.body.data[0].filterPath,
                     type: "",
                     hasChild : data.CommonPrefixes.length > 0 ? true : false
                 };
