@@ -1128,14 +1128,14 @@ app.post('/', function (req, res) {
                     type: "",
                     hasChild : data.CommonPrefixes.length > 0 ? true : false
                 };
+                getFilesList(req).then(data => {
+                    response = {
+                        cwd: cwdFile,
+                        files: data
+                    };
+                    responseDetails(res, response);
+                });
             });
-            getFilesList(req).then(data => {
-                response = {
-                    cwd: cwdFile,
-                    files: data
-                };
-                responseDetails(res, response);
-            })
 
         } else {
             cos.listObjects({ Bucket: awsConfig.bucketName.toString(), Delimiter: "/" }, function (err, data) {
@@ -1149,14 +1149,14 @@ app.post('/', function (req, res) {
                     filterPath: req.body.data.length > 0 ? req.body.path : "",
                     hasChild : data.CommonPrefixes.length > 0 ? true : false
                 };
+                getFilesList(req).then(data => {
+                    response = {
+                        cwd: cwdFile,
+                        files: data
+                    };
+                    responseDetails(res, response);
+                });
             });
-            getFilesList(req).then(data => {
-                response = {
-                    cwd: cwdFile,
-                    files: data
-                };
-                responseDetails(res, response);
-            })
         }
     }
 });
