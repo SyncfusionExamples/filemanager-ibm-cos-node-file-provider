@@ -741,7 +741,7 @@ function copyMoveOperations(action, req, res) {
                 files.push(cwd);
                 promiseList = [];
                 if (action == "move") {
-                    deleteFile(req, req.body.name, null).then(function (data) {
+                    deleteFile(req, req.body.name, res).then(function (data) {
                         response = {
                             files: files, error: null,
                             details: null, cwd: null
