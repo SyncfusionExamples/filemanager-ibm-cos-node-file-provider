@@ -1146,7 +1146,7 @@ app.post('/', function (req, res) {
                     dateModified: new Date(),
                     dateCreated: new Date(),
                     type: "",
-                    filterPath: req.body.data.length > 0 ? req.body.path : "",
+                    filterPath: req.body.path === "/" ? "" : req.body.path,
                     hasChild : data.CommonPrefixes.length > 0 ? true : false
                 };
                 getFilesList(req).then(data => {
