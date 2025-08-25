@@ -734,12 +734,15 @@ function copyMoveOperations(action, req, res) {
         Promise.all(promiseList).then(data => {
             var cwd = getCWDObjects();
             var files = [];
-            cwd.name = req.body.name;
             hasChild(req.body.path.substr(1, req.body.path.length) + "/").then(function (data) {
-                cwd.hasChild = data;
-                cwd.type = "";
-                files.push(cwd);
-                promiseList = [];
+                for (var i = 0; i < req.body.names.length; i++) {
+                    cwd.name = req.body.names[i];
+                    cwd.filterPath = req.body.targetPath === "/" ? "" : req.body.targetPath;
+                    cwd.isFile = req.body.data[i].isFile;
+                    cwd.hasChild = !req.body.data[i].isFile;
+                    cwd.type = "";
+                    files.push(cwd);
+                }
                 if (action == "move") {
                     deleteFile(req, req.body.name, res).then(function (data) {
                         response = {
